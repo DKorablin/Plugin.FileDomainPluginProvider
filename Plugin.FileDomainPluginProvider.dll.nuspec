@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+	<metadata>
+		<id>AlphaOmega.SAL.Plugin.FileDomainPluginProvider</id>
+		<version>0.0.0.0</version>
+		<authors>DKorablin</authors>
+		<license type="expression">Apache-1.0</license>
+		<readme>docs\README.md</readme>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<projectUrl>https://dkorablin.ru/project/Default.aspx?File=106</projectUrl>
+		<repository type="git" url="https://github.com/DKorablin/Plugin.FileDomainPluginProvider" />
+		<description>This plugin uses almost same behavior as a Basic File Plugin Provider, but to make sure that DLL contains IPlugin interface, it's launching separate AppDomain, search for suitable classes and after that load it inside primary AppDomain.</description>
+		<releaseNotes></releaseNotes>
+		<copyright>Danila Korablin</copyright>
+		<tags>SAL,Plugin,PluginProvider</tags>
+		<dependencies>
+			<group targetFramework="net20">
+				<dependency id="SAL.Flatbed" version="1.2.9" />
+			</group>
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="README.md" target="docs" />
+		<!--file src="bin\net20\Plugin.FileDomainPluginProvider.xml" target="xml" /-->
+		<file src="bin\net20\Plugin.FileDomainPluginProvider.dll" target="lib\net20" />
+	</files>
+</package>
