@@ -69,10 +69,13 @@ namespace Plugin.FileDomainPluginProvider
 					foreach(AssemblyTypesInfo info in infos)
 						this.LoadAssembly(info, ConnectMode.Startup);
 
-					FileSystemWatcher watcher = new FileSystemWatcher(pluginPath, Constant.LibrarySearchExtension);
-					watcher.Changed += new FileSystemEventHandler(Monitor_Changed);
-					watcher.EnableRaisingEvents = true;
-					this.Monitors.Add(watcher);
+					foreach(String extension in FilePluginArgs.LibraryExtensions)
+					{
+						FileSystemWatcher watcher = new FileSystemWatcher(pluginPath, "*" + extension);
+						watcher.Changed += new FileSystemEventHandler(Monitor_Changed);
+						watcher.EnableRaisingEvents = true;
+						this.Monitors.Add(watcher);
+					}
 				}
 		}
 
@@ -84,8 +87,9 @@ namespace Plugin.FileDomainPluginProvider
 			AssemblyName targetName = new AssemblyName(assemblyName);
 			foreach(String pluginPath in this.Args.PluginPath)
 				if(Directory.Exists(pluginPath))
-					foreach(String file in Directory.GetFiles(pluginPath, Constant.LibrarySearchExtension, SearchOption.AllDirectories))//Поиск только файлов с расширением .dll
-						try
+					foreach(String file in Directory.GetFiles(pluginPath, "*.*", SearchOption.AllDirectories))
+						if(FilePluginArgs.CheckFileExtension(file))//Поиск только файлов с расширением .dll (UPD: Added opportunity to check various extensions for plugins)
+							try
 						{
 							AssemblyName name = AssemblyName.GetAssemblyName(file);
 							if(name.FullName == targetName.FullName)

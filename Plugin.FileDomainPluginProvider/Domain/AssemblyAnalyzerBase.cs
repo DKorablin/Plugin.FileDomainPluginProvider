@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Plugin.FilePluginProvider;
 
 namespace Plugin.FileDomainPluginProvider.Domain
 {
@@ -40,26 +41,31 @@ namespace Plugin.FileDomainPluginProvider.Domain
 				return loadedAssembly;
 
 			AssemblyName assemblyName = new AssemblyName(args.Name);
-			String dependentAssemblyFilename = Path.Combine(directory.FullName, assemblyName.Name + Constant.LibraryExtension);
-
-			return File.Exists(dependentAssemblyFilename)
-				? Assembly.ReflectionOnlyLoadFrom(dependentAssemblyFilename)
-				: Assembly.ReflectionOnlyLoad(args.Name);
+			foreach(String extension in FilePluginArgs.LibraryExtensions)
+			{
+				String dependentAssemblyFilename = Path.Combine(directory.FullName, assemblyName.Name + extension);
+				if(File.Exists(dependentAssemblyFilename))
+					return Assembly.ReflectionOnlyLoadFrom(dependentAssemblyFilename);
+			}
+			return Assembly.ReflectionOnlyLoad(args.Name);
 		}
 
 		private Assembly OnResolve(ResolveEventArgs args, DirectoryInfo directory)
 		{
-			Assembly loadedAssembly = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), delegate(Assembly asm) { return String.Equals(asm.FullName, args.Name, StringComparison.OrdinalIgnoreCase); });
+			Assembly loadedAssembly = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), delegate (Assembly asm) { return String.Equals(asm.FullName, args.Name, StringComparison.OrdinalIgnoreCase); });
 
 			if(loadedAssembly != null)
 				return loadedAssembly;
 
 			AssemblyName assemblyName = new AssemblyName(args.Name);
-			String dependentAssemblyFilename = Path.Combine(directory.FullName, assemblyName.Name + Constant.LibraryExtension);
+			foreach(String extension in FilePluginArgs.LibraryExtensions)
+			{
+				String dependentAssemblyFilename = Path.Combine(directory.FullName, assemblyName.Name + extension);
 
-			return File.Exists(dependentAssemblyFilename)
-				? Assembly.LoadFrom(dependentAssemblyFilename)
-				: null;//return Assembly.Load(args.Name); - StackOverflowException
+				if(File.Exists(dependentAssemblyFilename))
+					return Assembly.LoadFrom(dependentAssemblyFilename);
+			}
+			return null;//return Assembly.Load(args.Name); - StackOverflowException
 		}
 	}
 }
