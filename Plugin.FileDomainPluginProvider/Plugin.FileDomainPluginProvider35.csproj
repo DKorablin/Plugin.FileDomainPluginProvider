@@ -50,7 +50,6 @@
       <Link>FilePluginArgs.cs</Link>
     </Compile>
     <Compile Include="AssemblyTypesInfo.cs" />
-    <Compile Include="Constant.cs" />
     <Compile Include="Domain\AssemblyTypesReader.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
