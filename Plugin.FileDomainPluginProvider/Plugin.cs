@@ -72,7 +72,7 @@ namespace Plugin.FileDomainPluginProvider
 					foreach(String extension in FilePluginArgs.LibraryExtensions)
 					{
 						FileSystemWatcher watcher = new FileSystemWatcher(pluginPath, "*" + extension);
-						watcher.Changed += new FileSystemEventHandler(Monitor_Changed);
+						watcher.Changed += new FileSystemEventHandler(this.Monitor_Changed);
 						watcher.EnableRaisingEvents = true;
 						this.Monitors.Add(watcher);
 					}

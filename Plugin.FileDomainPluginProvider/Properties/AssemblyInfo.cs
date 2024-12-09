@@ -18,5 +18,5 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("Danila Korablin")]
 [assembly: AssemblyProduct("File Domain Plugin Provider")]
-[assembly: AssemblyCopyright("Copyright © Danila Korablin 2016-2023")]
+[assembly: AssemblyCopyright("Copyright © Danila Korablin 2016-2024")]
 #endif
