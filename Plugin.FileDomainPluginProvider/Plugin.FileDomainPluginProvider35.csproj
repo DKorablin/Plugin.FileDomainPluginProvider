@@ -3,7 +3,7 @@
   <PropertyGroup>
     <!--This to lines are added to separate build process between .NET & .NET Standart-->
     <BaseOutputPath>$(MSBuildProjectDirectory)/../obj/net20/$(MSBuildProjectName)/bin</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(MSBuildProjectDirectory)/../obj/net20/$(MSBuildProjectName)/obj</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildProjectDirectory)/../../obj/net20/$(MSBuildProjectName)/obj</BaseIntermediateOutputPath>
     <Version Condition="'$(Version)' == ''">1.1.0.0</Version>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>

@@ -50,7 +50,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 				switch((UInt32)hResult)
 				{
 				case 0x80131515://loadFromRemoteSources
-					Exception exc1 = exc.InnerException == null ? exc : exc.InnerException;
+					Exception exc1 = exc.InnerException ?? exc;
 					return new AssemblyTypesInfo(filePath, exc1.Message);
 				}
 				return null;
@@ -62,7 +62,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 				return new AssemblyTypesInfo(filePath, errors);
 			} catch(Exception exc)
 			{
-				Exception exc1 = exc.InnerException == null ? exc : exc.InnerException;
+				Exception exc1 = exc.InnerException ?? exc;
 				return new AssemblyTypesInfo(filePath, exc1.Message);
 			}
 
