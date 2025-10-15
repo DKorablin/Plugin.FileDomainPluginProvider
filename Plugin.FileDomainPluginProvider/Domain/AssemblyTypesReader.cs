@@ -20,33 +20,39 @@ namespace Plugin.FileDomainPluginProvider.Domain
 		public AssemblyTypesReader(String[] filePath, ManualResetEvent onDone)
 		{
 			this.FilePath = filePath;
-			this.Info = new AssemblyTypesInfo[FilePath.Length];
+			this.Info = new AssemblyTypesInfo[this.FilePath.Length];
 			this.OnDone = onDone;
 		}
 
 		public void Read(Object threadContext)
 		{
 			for(Int32 loop = 0; loop < this.FilePath.Length; loop++)
-				this.Info[loop] = GetAssemblyTypes(FilePath[loop]);
+				this.Info[loop] = GetAssemblyTypes(this.FilePath[loop]);
 			this.OnDone.Set();
 		}
 
 		public static AssemblyTypesInfo GetAssemblyTypes(String filePath)
 		{
-			List<String> types = new List<String>();
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(filePath);
+
 				//Assembly identity is only (Name, Version, Culture, PublicKeyToken). Your two builds (net35 and net8.0) emit the same identity (same simple name, version, etc.). The target framework (TargetFrameworkAttribute) is NOT part of the identity.
 				if(!String.Equals(assembly.Location, filePath, StringComparison.OrdinalIgnoreCase))
+				{
 					throw new InvalidOperationException($"Assembly \"{filePath}\" will be skipped because it’s already loaded from \"{assembly.Location}\".");
+				}
 
+				List<String> types = new List<String>();
 				foreach(Type assemblyType in assembly.GetTypes())
 					if(PluginUtils.IsPluginType(assemblyType))
 						types.Add(assemblyType.FullName);
+
+				if(types.Count > 0)
+					return new AssemblyTypesInfo(filePath, types.ToArray());
 			} catch(BadImageFormatException)
 			{
-				return null;
+				// Unsupported binary format (not .NET assembly)
 			} catch(FileLoadException exc)
 			{
 				Int32 hResult = Marshal.GetHRForException(exc);
@@ -56,7 +62,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 					Exception exc1 = exc.InnerException ?? exc;
 					return new AssemblyTypesInfo(filePath, exc1.Message);
 				}
-				return null;
+				// Some generic file load error
 			} catch(ReflectionTypeLoadException exc)
 			{
 				String errors = exc.LoaderExceptions != null && exc.LoaderExceptions.Length > 0
@@ -69,9 +75,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 				return new AssemblyTypesInfo(filePath, exc1.Message);
 			}
 
-			return types.Count > 0
-				? new AssemblyTypesInfo(filePath, types.ToArray())
-				: null;
+			return null;
 		}
 	}
 }

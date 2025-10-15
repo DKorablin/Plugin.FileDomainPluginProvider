@@ -61,7 +61,7 @@ public sealed class MySamplePlugin : IPlugin {
 
 ## Troubleshooting
 Problem: Assembly skipped with message about already loaded path.
-Cause: Identity clash (same Name/Version/PKT). Rename or bump version.
+Cause: Identity clash (same Name/Version/PKT). Rename or bump version. Check that you don't have multiple copies (included based on different .NET versions) of the same assembly in different plugin folders.
 
 Problem: BadImageFormatException.
 Cause: Not a valid .NET assembly or built for incompatible architecture.
