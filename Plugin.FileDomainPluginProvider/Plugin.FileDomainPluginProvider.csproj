@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net35</TargetFrameworks>
-		<UseWindowsForms>true</UseWindowsForms>
+		<TargetFrameworks>net35;net8.0</TargetFrameworks>
 		<OutputType>Library</OutputType>
 		<RootNamespace>Plugin.FileDomainPluginProvider</RootNamespace>
 		<Configuration>Debug</Configuration>
@@ -9,15 +8,37 @@
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
-		<NoWarn>$(NoWarn);CA1416</NoWarn>
+		<NoWarn>$(NoWarn)</NoWarn>
 		<DefineConstants>$(DefineConstants)</DefineConstants>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
+		<UseWindowsForms>true</UseWindowsForms>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net35'">
+		<Reference Include="System.Configuration"/>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' != 'net35'">
+		<PackageReference Include="System.Configuration.ConfigurationManager" />
+		<AssemblyAttributes Include="AssemblyMetadata">
+			<_Parameter1>ProjectUrl</_Parameter1>
+			<_Parameter2>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</_Parameter2>
+		</AssemblyAttributes>
+	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<Optimize>true</Optimize>
 		<PublishSingleFile>true</PublishSingleFile>
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SAL.Flatbed">
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
 	<!--nuspec-->
 	<PropertyGroup>
@@ -38,12 +59,5 @@
 
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="SAL.Flatbed">
-			<ExcludeAssets>runtime</ExcludeAssets>
-		</PackageReference>
-		<Reference Include="System.Configuration"/>
 	</ItemGroup>
 </Project>

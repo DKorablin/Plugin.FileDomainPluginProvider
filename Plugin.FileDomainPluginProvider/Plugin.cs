@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+#if NET5_0_OR_GREATER
+using Plugin.FileDomainPluginProvider.Domain.NetCore;
+#endif
 using AlphaOmega.Reflection;
 using Plugin.FileDomainPluginProvider.Domain;
 using Plugin.FilePluginProvider;
@@ -52,22 +55,29 @@ namespace Plugin.FileDomainPluginProvider
 
 		void IPluginProvider.LoadPlugins()
 		{
+#if NET5_0_OR_GREATER
+			// New logic for .NET 5+ using AssemblyLoadContext based scanner
+			NetCorePluginLoader netCoreLoader = new NetCorePluginLoader(this.Trace, this.Host, this.Args);
+			netCoreLoader.LoadAll();
+			foreach(String pluginPath in this.Args.PluginPath)
+				if(Directory.Exists(pluginPath))
+					foreach(String extension in FilePluginArgs.LibraryExtensions)
+					{
+						FileSystemWatcher watcher = new FileSystemWatcher(pluginPath, "*" + extension);
+						watcher.Changed += (s, e) => { if(e.ChangeType == WatcherChangeTypes.Changed) netCoreLoader.LoadChanged(e.FullPath); };
+						watcher.EnableRaisingEvents = true;
+						this.Monitors.Add(watcher);
+					}
+#else
+			// Legacy AppDomain based logic for net35
 			foreach(String pluginPath in this.Args.PluginPath)
 				if(Directory.Exists(pluginPath))
 				{
 					AssemblyTypesInfo[] infos;
-					/*var loadContext1 = AssemblyLoadContext.GetLoadContext(AppDomain.CurrentDomain.GetAssemblies()[0]);*/
-					/*Int32 asmCount1 = AppDomain.CurrentDomain.GetAssemblies().Length;
-					using(AssemblyAnalyzer2 analyzer2 = new AssemblyAnalyzer2(pluginPath))
-						infos = analyzer2.CheckAssemblies();
-					Int32 asmCount2 = AppDomain.CurrentDomain.GetAssemblies().Length;*/
-
 					using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
 						infos = analyzer.Proxy.CheckAssemblies(pluginPath);
-
 					foreach(AssemblyTypesInfo info in infos)
 						this.LoadAssembly(info, ConnectMode.Startup);
-
 					foreach(String extension in FilePluginArgs.LibraryExtensions)
 					{
 						FileSystemWatcher watcher = new FileSystemWatcher(pluginPath, "*" + extension);
@@ -76,6 +86,7 @@ namespace Plugin.FileDomainPluginProvider
 						this.Monitors.Add(watcher);
 					}
 				}
+#endif
 		}
 
 		Assembly IPluginProvider.ResolveAssembly(String assemblyName)
@@ -89,22 +100,22 @@ namespace Plugin.FileDomainPluginProvider
 					foreach(String file in Directory.GetFiles(pluginPath, "*.*", SearchOption.AllDirectories))
 						if(FilePluginArgs.CheckFileExtension(file))//Searching only files with .dll extension (UPD: Added opportunity to check various extensions for plugins)
 							try
-						{
-							AssemblyName name = AssemblyName.GetAssemblyName(file);
-							if(name.FullName == targetName.FullName)
-								return Assembly.LoadFile(file);
-							//return assembly;//TODO: Reference DLL from operating system can't be use!
-						} catch(BadImageFormatException)
-						{
-							continue;
-						} catch(FileLoadException)
-						{
-							continue;
-						} catch(Exception exc)
-						{
-							exc.Data.Add("Library", file);
-							this.Trace.TraceData(TraceEventType.Error, 1, exc);
-						}
+							{
+								AssemblyName name = AssemblyName.GetAssemblyName(file);
+								if(name.FullName == targetName.FullName)
+									return Assembly.LoadFile(file);
+								//return assembly;//TODO: Reference DLL from operating system can't be use!
+							} catch(BadImageFormatException)
+							{
+								// Ignoring BadImageFormatException
+							} catch(FileLoadException)
+							{
+								// Ignoring FileLoadException
+							} catch(Exception exc)
+							{
+								exc.Data.Add("Library", file);
+								this.Trace.TraceData(TraceEventType.Error, 1, exc);
+							}
 
 			this.Trace.TraceEvent(TraceEventType.Warning, 5, "The provider {2} is unable to locate the assembly {0} in the path {1}", assemblyName, String.Join(",", this.Args.PluginPath), this.GetType());
 			IPluginProvider parentProvider = ((IPluginProvider)this).ParentProvider;
