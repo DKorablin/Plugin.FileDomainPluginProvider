@@ -22,6 +22,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.FileDomainPluginProvider", "Plugin.FileDomainPluginProvider\Plugin.FileDomainPluginProvider.csproj", "{AB38D508-1CD4-E6CA-5EF8-D9E39B57BAFA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.github\scripts\Build-ReleasePackage.ps1 = .github\scripts\Build-ReleasePackage.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +43,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{06D963D4-9A0B-4B2B-A3C3-B1A534140FD0} = {29EFF129-D181-471B-939B-05374FAEB871}
+		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {29EFF129-D181-471B-939B-05374FAEB871}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BA4632CB-F2AC-4E96-82A0-59488827569D}
