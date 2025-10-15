@@ -15,24 +15,24 @@ namespace Plugin.FileDomainPluginProvider.Domain
 		{
 			DirectoryInfo directory = new DirectoryInfo(assemblyPath);
 
-			this._reflectionOnlyResolve = delegate(Object s, ResolveEventArgs e) { return OnReflectionOnlyResolve(e, directory); };
-			this._resolve = delegate(Object s, ResolveEventArgs e) { return OnResolve(e, directory); };
+			this._reflectionOnlyResolve = (s, e) => OnReflectionOnlyResolve(e, directory);
+			this._resolve = (s, e) => OnResolve(e, directory);
 
 			AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += this._reflectionOnlyResolve;
-			AppDomain.CurrentDomain.AssemblyResolve += this._resolve;//TODO: Попытка загрузить нехватающие сборки
+			AppDomain.CurrentDomain.AssemblyResolve += this._resolve;
 		}
 
 		protected void DetachResolveEvents()
 		{
 			AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= this._reflectionOnlyResolve;
-			AppDomain.CurrentDomain.AssemblyResolve -= this._resolve;//TODO: Попытка загрузить нехватающие сборки
+			AppDomain.CurrentDomain.AssemblyResolve -= this._resolve;
 		}
 
-		/// <summary>Attempts ReflectionOnlyLoad of current Assemblies dependants</summary>
+		/// <summary>Attempts ReflectionOnlyLoad of current Assemblies dependents</summary>
 		/// <param name="args">ReflectionOnlyAssemblyResolve event args</param>
 		/// <param name="directory">The current Assemblies Directory</param>
-		/// <returns>ReflectionOnlyLoadFrom loaded dependant Assembly</returns>
-		private Assembly OnReflectionOnlyResolve(ResolveEventArgs args, DirectoryInfo directory)
+		/// <returns>ReflectionOnlyLoadFrom loaded dependent Assembly</returns>
+		private static Assembly OnReflectionOnlyResolve(ResolveEventArgs args, DirectoryInfo directory)
 		{
 
 			Assembly loadedAssembly = Array.Find(AppDomain.CurrentDomain.ReflectionOnlyGetAssemblies(), delegate(Assembly asm) { return String.Equals(asm.FullName, args.Name, StringComparison.OrdinalIgnoreCase); });
@@ -50,9 +50,9 @@ namespace Plugin.FileDomainPluginProvider.Domain
 			return Assembly.ReflectionOnlyLoad(args.Name);
 		}
 
-		private Assembly OnResolve(ResolveEventArgs args, DirectoryInfo directory)
+		private static Assembly OnResolve(ResolveEventArgs args, DirectoryInfo directory)
 		{
-			Assembly loadedAssembly = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), delegate (Assembly asm) { return String.Equals(asm.FullName, args.Name, StringComparison.OrdinalIgnoreCase); });
+			Assembly loadedAssembly = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), (asm) => String.Equals(asm.FullName, args.Name, StringComparison.OrdinalIgnoreCase));
 
 			if(loadedAssembly != null)
 				return loadedAssembly;

@@ -1,0 +1,18 @@
+<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+	</PropertyGroup>
+	<ItemGroup>
+		<!--GlobalPackageReference Include="SAL.Windows" Version="1.2.10">
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</GlobalPackageReference-->
+		<PackageVersion Include="SAL.Flatbed" Version="1.2.10">
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageVersion>
+		<!--Analyzers-->
+		<GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.8.0.113526">
+			<PrivateAssets>All</PrivateAssets>
+			<IncludeAssets>Runtime; Build; Native; contentfiles; Analyzers; buildtransitive</IncludeAssets>
+		</GlobalPackageReference>
+	</ItemGroup>
+</Project>

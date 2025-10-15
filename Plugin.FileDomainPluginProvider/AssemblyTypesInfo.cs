@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Plugin.FileDomainPluginProvider
 {
 	[Serializable]
+	[DebuggerDisplay("AssemblyPath = {" + nameof(AssemblyPath) + "}, Types = {" + nameof(Types) + ".Length}, Error = {" + nameof(Error) + "}")]
 	internal class AssemblyTypesInfo
 	{
 		public String AssemblyPath { get; }

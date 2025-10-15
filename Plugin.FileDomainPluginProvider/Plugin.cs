@@ -52,7 +52,6 @@ namespace Plugin.FileDomainPluginProvider
 
 		void IPluginProvider.LoadPlugins()
 		{
-			//System.Diagnostics.Debugger.Launch();
 			foreach(String pluginPath in this.Args.PluginPath)
 				if(Directory.Exists(pluginPath))
 				{
@@ -88,13 +87,13 @@ namespace Plugin.FileDomainPluginProvider
 			foreach(String pluginPath in this.Args.PluginPath)
 				if(Directory.Exists(pluginPath))
 					foreach(String file in Directory.GetFiles(pluginPath, "*.*", SearchOption.AllDirectories))
-						if(FilePluginArgs.CheckFileExtension(file))//Поиск только файлов с расширением .dll (UPD: Added opportunity to check various extensions for plugins)
+						if(FilePluginArgs.CheckFileExtension(file))//Searching only files with .dll extension (UPD: Added opportunity to check various extensions for plugins)
 							try
 						{
 							AssemblyName name = AssemblyName.GetAssemblyName(file);
 							if(name.FullName == targetName.FullName)
 								return Assembly.LoadFile(file);
-							//return assembly;//TODO: Reference DLL из оперативной памяти не цепляются!
+							//return assembly;//TODO: Reference DLL from operating system can't be use!
 						} catch(BadImageFormatException)
 						{
 							continue;
@@ -109,9 +108,7 @@ namespace Plugin.FileDomainPluginProvider
 
 			this.Trace.TraceEvent(TraceEventType.Warning, 5, "The provider {2} is unable to locate the assembly {0} in the path {1}", assemblyName, String.Join(",", this.Args.PluginPath), this.GetType());
 			IPluginProvider parentProvider = ((IPluginProvider)this).ParentProvider;
-			return parentProvider == null
-				? null
-				: parentProvider.ResolveAssembly(assemblyName);
+			return parentProvider?.ResolveAssembly(assemblyName);
 		}
 
 		/// <summary>New file for check is available</summary>
@@ -141,8 +138,8 @@ namespace Plugin.FileDomainPluginProvider
 				if(info.Types.Length == 0)
 					throw new InvalidOperationException("Types is empty");
 
-				// Проверяем что плагин с таким источником ещё не загружен, если его уже загрузил родительский провайдер.
-				// Загрузка из ФС так что источник должен быть по любому уникальный.
+				// We check that the plugin with this source is not yet loaded if it has already been loaded by the parent provider.
+				// Loading from FS, so the source must be unique.
 				foreach(IPluginDescription plugin in this.Host.Plugins)
 					if(info.AssemblyPath.Equals(plugin.Source, StringComparison.InvariantCultureIgnoreCase))
 						return;
@@ -151,11 +148,10 @@ namespace Plugin.FileDomainPluginProvider
 				foreach(String type in info.Types)
 					this.Host.Plugins.LoadPlugin(assembly, type, info.AssemblyPath, mode);
 
-			} catch(BadImageFormatException exc)//Ошибка загрузки плагина. Можно почитать заголовок загружаемого файла, но мне влом
+			} catch(BadImageFormatException exc)//Plugin loading error. I could read the title of the file being loaded, but I'm too lazy.
 			{
 				exc.Data.Add("Library", info.AssemblyPath);
 				this.Trace.TraceData(TraceEventType.Error, 1, exc);
-				return;
 			} catch(Exception exc)
 			{
 				exc.Data.Add("Library", info.AssemblyPath);

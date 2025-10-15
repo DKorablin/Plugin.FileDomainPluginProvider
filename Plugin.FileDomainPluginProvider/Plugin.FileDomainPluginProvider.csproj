@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net35</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Plugin.FileDomainPluginProvider</RootNamespace>
+		<Configuration>Debug</Configuration>
+		<Deterministic>false</Deterministic>
+		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CA1416</NoWarn>
+		<DefineConstants>$(DefineConstants)</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<Optimize>true</Optimize>
+		<PublishSingleFile>true</PublishSingleFile>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+	<!--nuspec-->
+	<PropertyGroup>
+		<PackageId>AlphaOmega.SAL.Plugin.Configuration</PackageId>
+		<Version>$(Version)</Version>
+		<Title>Files plugin provider for SAL based applications</Title>
+		<Description>This plugin uses almost same behavior as a Basic File Plugin Provider, but to make sure that DLL contains IPlugin interface, it's launching separate AppDomain, search for suitable classes and after that load it inside primary AppDomain.</Description>
+		<Authors>Danila Korablin</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</RepositoryUrl>
+		<PackageTags>SAL plugin windows provider</PackageTags>
+	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Include="..\PluginProviders.Shared\FilePluginArgs.cs" Link="FilePluginArgs.cs" />
+	  <Compile Include="..\Reflection.Shared\AssemblyLoader.cs" Link="Domain\AssemblyLoader.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SAL.Flatbed">
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<Reference Include="System.Configuration"/>
+	</ItemGroup>
+</Project>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -36,7 +37,9 @@ namespace Plugin.FileDomainPluginProvider.Domain
 			try
 			{
 				Assembly assembly = Assembly.LoadFrom(filePath);
-				//Assembly assembly = context.LoadFromAssemblyPath(filePath);
+				//Assembly identity is only (Name, Version, Culture, PublicKeyToken). Your two builds (net35 and net8.0) emit the same identity (same simple name, version, etc.). The target framework (TargetFrameworkAttribute) is NOT part of the identity.
+				if(!String.Equals(assembly.Location, filePath, StringComparison.OrdinalIgnoreCase))
+					throw new InvalidOperationException($"Assembly \"{filePath}\" will be skipped because it’s already loaded from \"{assembly.Location}\".");
 
 				foreach(Type assemblyType in assembly.GetTypes())
 					if(PluginUtils.IsPluginType(assemblyType))
@@ -57,7 +60,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 			} catch(ReflectionTypeLoadException exc)
 			{
 				String errors = exc.LoaderExceptions != null && exc.LoaderExceptions.Length > 0
-					? String.Join(Environment.NewLine, Array.ConvertAll(exc.LoaderExceptions, (Exception e) => { return e.Message; }))
+					? String.Join(Environment.NewLine, new HashSet<String>(Array.ConvertAll(exc.LoaderExceptions, e => e.Message)).ToArray())
 					: exc.Message;
 				return new AssemblyTypesInfo(filePath, errors);
 			} catch(Exception exc)

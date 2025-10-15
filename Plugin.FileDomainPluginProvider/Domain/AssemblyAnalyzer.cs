@@ -12,7 +12,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 		public AssemblyTypesInfo[] CheckAssemblies(String path)
 		{
 			base.AttachResolveEvents(path);
-			//System.Diagnostics.Debugger.Launch();
+
 			List<AssemblyTypesInfo> assemblies = new List<AssemblyTypesInfo>();
 			try
 			{
