@@ -21,7 +21,7 @@
 
 	<!--nuspec-->
 	<PropertyGroup>
-		<PackageId>AlphaOmega.SAL.Plugin.Configuration</PackageId>
+		<PackageId>AlphaOmega.SAL.Plugin.FileDomainPluginProvider</PackageId>
 		<Version>$(Version)</Version>
 		<Title>Files plugin provider for SAL based applications</Title>
 		<Description>This plugin uses almost same behavior as a Basic File Plugin Provider, but to make sure that DLL contains IPlugin interface, it's launching separate AppDomain, search for suitable classes and after that load it inside primary AppDomain.</Description>
