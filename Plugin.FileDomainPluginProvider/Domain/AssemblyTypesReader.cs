@@ -39,9 +39,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 
 				//Assembly identity is only (Name, Version, Culture, PublicKeyToken). Your two builds (net35 and net8.0) emit the same identity (same simple name, version, etc.). The target framework (TargetFrameworkAttribute) is NOT part of the identity.
 				if(!String.Equals(assembly.Location, filePath, StringComparison.OrdinalIgnoreCase))
-				{
-					throw new InvalidOperationException($"Assembly \"{filePath}\" will be skipped because it’s already loaded from \"{assembly.Location}\".");
-				}
+					return new AssemblyTypesInfo(filePath, $"Assembly \"{assembly.FullName}\" will be skipped because it’s already loaded from \"{assembly.Location}\".", assembly.Location);
 
 				List<String> types = new List<String>();
 				foreach(Type assemblyType in assembly.GetTypes())

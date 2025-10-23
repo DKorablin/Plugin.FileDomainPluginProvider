@@ -71,6 +71,3 @@ Cause: No public types implementing expected plugin interface; ensure correct re
 
 Problem: Dependencies not found.
 Cause: Missing dependent DLL in same directory. Copy dependency next to plugin or ensure it is already loaded by host.
-
-## Warning
-Even with sandbox scanning, a collision can still occur when the proxy crosses AppDomains if identity duplicates exist. Ensure unique assemblies (or versions) across all plugin folders.

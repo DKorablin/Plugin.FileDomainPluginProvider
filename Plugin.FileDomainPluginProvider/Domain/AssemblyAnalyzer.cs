@@ -6,7 +6,7 @@ using Plugin.FilePluginProvider;
 
 namespace Plugin.FileDomainPluginProvider.Domain
 {
-    [Serializable]
+	[Serializable]
 	internal class AssemblyAnalyzer : AssemblyAnalyzerBase
 	{
 		public AssemblyTypesInfo[] CheckAssemblies(String path)

@@ -73,11 +73,30 @@ namespace Plugin.FileDomainPluginProvider
 			foreach(String pluginPath in this.Args.PluginPath)
 				if(Directory.Exists(pluginPath))
 				{
-					AssemblyTypesInfo[] infos;
+					AssemblyTypesInfo[] foundAssemblies;
 					using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
-						infos = analyzer.Proxy.CheckAssemblies(pluginPath);
-					foreach(AssemblyTypesInfo info in infos)
+						foundAssemblies = analyzer.Proxy.CheckAssemblies(pluginPath);
+
+					foreach(AssemblyTypesInfo info in foundAssemblies)
+					{
 						this.LoadAssembly(info, ConnectMode.Startup);
+
+						// Previous assembly was already loaded with error. Trying to load its referenced assemblies again.
+						if(info.ReferencedAssemblyPath != null && info.Error != null)
+						{
+							var sourceReference = Array.Find(foundAssemblies, a => a.AssemblyPath == info.ReferencedAssemblyPath);
+							if(sourceReference != null && sourceReference.Error != null)
+							{
+								AssemblyTypesInfo newInfo;
+								using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
+									newInfo = analyzer.Proxy.CheckAssembly(info.AssemblyPath);
+
+								if(newInfo != null)
+									this.LoadAssembly(newInfo, ConnectMode.Startup);
+							}
+						}
+					}
+
 					foreach(String extension in FilePluginArgs.LibraryExtensions)
 					{
 						FileSystemWatcher watcher = new FileSystemWatcher(pluginPath, "*" + extension);

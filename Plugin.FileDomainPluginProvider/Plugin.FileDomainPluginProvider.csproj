@@ -50,7 +50,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</RepositoryUrl>
-		<PackageTags>SAL plugin windows provider</PackageTags>
+		<PackageTags>SAL plugin provider appdomain assembly reflection isolation</PackageTags>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Include="..\PluginProviders.Shared\FilePluginArgs.cs" Link="FilePluginArgs.cs" />
