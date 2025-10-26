@@ -60,10 +60,9 @@ namespace Plugin.FileDomainPluginProvider.Domain
 					Exception exc1 = exc.InnerException ?? exc;
 					return new AssemblyTypesInfo(filePath, exc1.Message);
 				}
-				// Some generic file load error
 			} catch(ReflectionTypeLoadException exc)
 			{
-				String errors = exc.LoaderExceptions != null && exc.LoaderExceptions.Length > 0
+				String errors = exc.LoaderExceptions?.Length > 0
 					? String.Join(Environment.NewLine, new HashSet<String>(Array.ConvertAll(exc.LoaderExceptions, e => e.Message)).ToArray())
 					: exc.Message;
 				return new AssemblyTypesInfo(filePath, errors);
