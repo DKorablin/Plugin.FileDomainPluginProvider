@@ -8,7 +8,7 @@
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
-		<!--EnableDynamicLoading>True</EnableDynamicLoading-->
+		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
@@ -60,4 +60,12 @@
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
 	</ItemGroup>
+
+	<!-- Exclude assemblies from copy to the output directory on build-->
+	<Target Name="ExcludeSystemAssemblies" AfterTargets="ResolveReferences">
+		<ItemGroup>
+			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(Filename)').StartsWith('System.'))" />
+			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(Filename)').StartsWith('Microsoft.Win32.'))" />
+		</ItemGroup>
+	</Target>
 </Project>
