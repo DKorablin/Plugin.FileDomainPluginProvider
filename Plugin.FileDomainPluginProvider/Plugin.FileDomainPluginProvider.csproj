@@ -11,12 +11,31 @@
 		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
+	<!--nuspec-->
+	<PropertyGroup>
+		<PackageId>AlphaOmega.SAL.Plugin.FileDomainPluginProvider</PackageId>
+		<Version>$(Version)</Version>
+		<Title>Files plugin provider for SAL based applications</Title>
+		<Description>This plugin uses almost same behavior as a Basic File Plugin Provider, but to make sure that DLL contains IPlugin interface, it's launching separate AppDomain, search for suitable classes and after that load it inside primary AppDomain.</Description>
+		<Authors>Danila Korablin</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</RepositoryUrl>
+		<PackageTags>SAL plugin provider appdomain assembly reflection isolation</PackageTags>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
 		<UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)'=='net35'">
-		<Reference Include="System.Configuration" />
+	<ItemGroup>
+		<PackageReference Include="SAL.Flatbed">
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<Reference Include="System.Configuration" Condition="'$(TargetFramework)'=='net35'" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
@@ -35,30 +54,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="SAL.Flatbed">
-			<ExcludeAssets>runtime</ExcludeAssets>
-		</PackageReference>
-	</ItemGroup>
-
-	<!--nuspec-->
-	<PropertyGroup>
-		<PackageId>AlphaOmega.SAL.Plugin.FileDomainPluginProvider</PackageId>
-		<Version>$(Version)</Version>
-		<Title>Files plugin provider for SAL based applications</Title>
-		<Description>This plugin uses almost same behavior as a Basic File Plugin Provider, but to make sure that DLL contains IPlugin interface, it's launching separate AppDomain, search for suitable classes and after that load it inside primary AppDomain.</Description>
-		<Authors>Danila Korablin</Authors>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
-		<RepositoryUrl>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</RepositoryUrl>
-		<PackageTags>SAL plugin provider appdomain assembly reflection isolation</PackageTags>
-	</PropertyGroup>
-	<ItemGroup>
-	  <Compile Include="..\PluginProviders.Shared\FilePluginArgs.cs" Link="FilePluginArgs.cs" />
-	  <Compile Include="..\Reflection.Shared\AssemblyLoader.cs" Link="Domain\AssemblyLoader.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
+		<Compile Include="..\PluginProviders.Shared\FilePluginArgs.cs" Link="FilePluginArgs.cs" />
+		<Compile Include="..\Reflection.Shared\AssemblyLoader.cs" Link="Domain\AssemblyLoader.cs" />
 	</ItemGroup>
 
 	<!-- Exclude assemblies from copy to the output directory on build-->

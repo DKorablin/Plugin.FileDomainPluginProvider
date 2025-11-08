@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-#if NET5_0_OR_GREATER
+#if !NETFRAMEWORK
 using Plugin.FileDomainPluginProvider.Domain.NetCore;
 #endif
 using AlphaOmega.Reflection;
@@ -55,21 +55,21 @@ namespace Plugin.FileDomainPluginProvider
 
 		private AssemblyTypesInfo[] ScanFolder(String path)
 		{
-#if NET5_0_OR_GREATER
-			return NetCoreAssemblyScanner.ScanFolder(path);
-#else
+#if NETFRAMEWORK
 			using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
 				return analyzer.Proxy.CheckAssemblies(path);
+#else
+			return NetCoreAssemblyScanner.ScanFolder(path);
 #endif
 		}
 
 		private AssemblyTypesInfo ScanAssembly(String path)
 		{
-#if NET5_0_OR_GREATER
-			return NetCoreAssemblyScanner.ScanAssembly(path);
-#else
+#if NETFRAMEWORK
 			using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
 				return analyzer.Proxy.CheckAssembly(path);
+#else
+			return NetCoreAssemblyScanner.ScanAssembly(path);
 #endif
 		}
 

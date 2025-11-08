@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-#if NET5_0_OR_GREATER
+#if !NETFRAMEWORK
 using System.Runtime.Loader;
 #endif
 using SAL.Flatbed;
@@ -56,7 +56,14 @@ namespace Plugin.FileDomainPluginProvider.Domain.NetCore
 
 		public void Dispose()
 		{
-			this._loadContext.Unload();
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(Boolean disposing)
+		{
+			if(disposing)
+				this._loadContext.Unload();
 		}
 
 		public static AssemblyTypesInfo[] ScanFolder(String path)
