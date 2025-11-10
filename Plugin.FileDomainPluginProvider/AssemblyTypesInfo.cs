@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Plugin.FileDomainPluginProvider
 {
 	[Serializable]
-	[DebuggerDisplay("AssemblyPath = {" + nameof(AssemblyPath) + "}, Types = {" + nameof(Types) + ".Length}, Error = {" + nameof(Error) + "}")]
+	[DebuggerDisplay("AssemblyPath = {" + nameof(AssemblyPath) + "}, Types = {" + nameof(Types) + "?.Length}, Error = {" + nameof(Error) + "}")]
 	internal class AssemblyTypesInfo
 	{
 		/// <summary>The path to analyzed assembly.</summary>

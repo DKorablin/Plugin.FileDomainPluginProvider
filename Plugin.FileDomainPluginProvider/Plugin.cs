@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-#if NET5_0_OR_GREATER
-using Plugin.FileDomainPluginProvider.Domain.NetCore;
-#endif
 using AlphaOmega.Reflection;
 using Plugin.FileDomainPluginProvider.Domain;
 using Plugin.FilePluginProvider;
@@ -53,30 +50,24 @@ namespace Plugin.FileDomainPluginProvider
 			}
 		}
 
+		private AssemblyTypesInfo[] ScanFolder(String path)
+		{
+			using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
+				return analyzer.Proxy.CheckAssemblies(path);
+		}
+
+		private AssemblyTypesInfo ScanAssembly(String path)
+		{
+			using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
+				return analyzer.Proxy.CheckAssembly(path);
+		}
+
 		void IPluginProvider.LoadPlugins()
 		{
-#if NET5_0_OR_GREATER
-			// New logic for .NET 5+ using AssemblyLoadContext based scanner
-			NetCorePluginLoader netCoreLoader = new NetCorePluginLoader(this.Trace, this.Host, this.Args);
-			netCoreLoader.LoadAll();
-			foreach(String pluginPath in this.Args.PluginPath)
-				if(Directory.Exists(pluginPath))
-					foreach(String extension in FilePluginArgs.LibraryExtensions)
-					{
-						FileSystemWatcher watcher = new FileSystemWatcher(pluginPath, "*" + extension);
-						watcher.Changed += (s, e) => { if(e.ChangeType == WatcherChangeTypes.Changed) netCoreLoader.LoadChanged(e.FullPath); };
-						watcher.EnableRaisingEvents = true;
-						this.Monitors.Add(watcher);
-					}
-#else
-			// Legacy AppDomain based logic for net35
 			foreach(String pluginPath in this.Args.PluginPath)
 				if(Directory.Exists(pluginPath))
 				{
-					AssemblyTypesInfo[] foundAssemblies;
-					using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
-						foundAssemblies = analyzer.Proxy.CheckAssemblies(pluginPath);
-
+					AssemblyTypesInfo[] foundAssemblies = this.ScanFolder(pluginPath);
 					foreach(AssemblyTypesInfo info in foundAssemblies)
 					{
 						this.LoadAssembly(info, ConnectMode.Startup);
@@ -87,9 +78,7 @@ namespace Plugin.FileDomainPluginProvider
 							var sourceReference = Array.Find(foundAssemblies, a => a.AssemblyPath == info.ReferencedAssemblyPath);
 							if(sourceReference != null && sourceReference.Error != null)
 							{
-								AssemblyTypesInfo newInfo;
-								using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
-									newInfo = analyzer.Proxy.CheckAssembly(info.AssemblyPath);
+								AssemblyTypesInfo newInfo = this.ScanAssembly(info.AssemblyPath);
 
 								if(newInfo != null)
 									this.LoadAssembly(newInfo, ConnectMode.Startup);
@@ -105,7 +94,6 @@ namespace Plugin.FileDomainPluginProvider
 						this.Monitors.Add(watcher);
 					}
 				}
-#endif
 		}
 
 		Assembly IPluginProvider.ResolveAssembly(String assemblyName)
@@ -148,9 +136,7 @@ namespace Plugin.FileDomainPluginProvider
 		{
 			if(e.ChangeType == WatcherChangeTypes.Changed)
 			{
-				AssemblyTypesInfo info;
-				using(AssemblyLoader<AssemblyAnalyzer> analyzer = new AssemblyLoader<AssemblyAnalyzer>())
-					info = analyzer.Proxy.CheckAssembly(e.FullPath);
+				AssemblyTypesInfo info = this.ScanAssembly(e.FullPath);
 				if(info != null)
 					this.LoadAssembly(info, ConnectMode.AfterStartup);
 			}

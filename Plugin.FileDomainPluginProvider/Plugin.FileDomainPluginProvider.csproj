@@ -1,44 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net35;net8.0</TargetFrameworks>
+		<TargetFrameworks>net35</TargetFrameworks>
 		<OutputType>Library</OutputType>
 		<RootNamespace>Plugin.FileDomainPluginProvider</RootNamespace>
-		<Configuration>Debug</Configuration>
+		<Configuration>Release</Configuration>
 		<Deterministic>false</Deterministic>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
-		<NoWarn>$(NoWarn)</NoWarn>
-		<DefineConstants>$(DefineConstants)</DefineConstants>
+		<CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-		<UseWindowsForms>true</UseWindowsForms>
-	</PropertyGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)'=='net35'">
-		<Reference Include="System.Configuration" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' != 'net35'">
-		<PackageReference Include="System.Configuration.ConfigurationManager" />
-		<AssemblyAttributes Include="AssemblyMetadata">
-			<_Parameter1>ProjectUrl</_Parameter1>
-			<_Parameter2>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</_Parameter2>
-		</AssemblyAttributes>
-	</ItemGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<Optimize>true</Optimize>
-		<PublishSingleFile>true</PublishSingleFile>
-		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="SAL.Flatbed">
-			<ExcludeAssets>runtime</ExcludeAssets>
-		</PackageReference>
-	</ItemGroup>
 
 	<!--nuspec-->
 	<PropertyGroup>
@@ -50,14 +21,31 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</RepositoryUrl>
-		<PackageTags>SAL plugin provider appdomain assembly reflection isolation</PackageTags>
+		<PackageTags>SAL plugin provider appdomain assembly reflection isolation framework</PackageTags>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Include="..\PluginProviders.Shared\FilePluginArgs.cs" Link="FilePluginArgs.cs" />
-	  <Compile Include="..\Reflection.Shared\AssemblyLoader.cs" Link="Domain\AssemblyLoader.cs" />
+		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
 	</ItemGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
+		<UseWindowsForms>true</UseWindowsForms>
+	</PropertyGroup>
+
 	<ItemGroup>
-		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
+		<PackageReference Include="SAL.Flatbed">
+			<ExcludeAssets>runtime</ExcludeAssets>
+		</PackageReference>
+		<Reference Include="System.Configuration" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<Optimize>true</Optimize>
+		<PublishSingleFile>true</PublishSingleFile>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\PluginProviders.Shared\FilePluginArgs.cs" Link="FilePluginArgs.cs" />
+		<Compile Include="..\Reflection.Shared\AssemblyLoader.cs" Link="Domain\AssemblyLoader.cs" />
 	</ItemGroup>
 </Project>
