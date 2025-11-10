@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net35;net8.0</TargetFrameworks>
+		<TargetFrameworks>net35</TargetFrameworks>
 		<OutputType>Library</OutputType>
 		<RootNamespace>Plugin.FileDomainPluginProvider</RootNamespace>
-		<Configuration>Debug</Configuration>
+		<Configuration>Release</Configuration>
 		<Deterministic>false</Deterministic>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
@@ -21,7 +21,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 		<RepositoryUrl>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</RepositoryUrl>
-		<PackageTags>SAL plugin provider appdomain assembly reflection isolation</PackageTags>
+		<PackageTags>SAL plugin provider appdomain assembly reflection isolation framework</PackageTags>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
@@ -35,16 +35,7 @@
 		<PackageReference Include="SAL.Flatbed">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
-		<Reference Include="System.Configuration" Condition="'$(TargetFramework)'=='net35'" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-		<PackageReference Include="System.Configuration.ConfigurationManager" />
-		<PackageReference Include="Microsoft.Extensions.DependencyModel"/>
-		<AssemblyAttributes Include="AssemblyMetadata">
-			<_Parameter1>ProjectUrl</_Parameter1>
-			<_Parameter2>https://github.com/DKorablin/Plugin.FileDomainPluginProvider</_Parameter2>
-		</AssemblyAttributes>
+		<Reference Include="System.Configuration" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -57,12 +48,4 @@
 		<Compile Include="..\PluginProviders.Shared\FilePluginArgs.cs" Link="FilePluginArgs.cs" />
 		<Compile Include="..\Reflection.Shared\AssemblyLoader.cs" Link="Domain\AssemblyLoader.cs" />
 	</ItemGroup>
-
-	<!-- Exclude assemblies from copy to the output directory on build-->
-	<Target Name="ExcludeSystemAssemblies" AfterTargets="ResolveReferences">
-		<ItemGroup>
-			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(Filename)').StartsWith('System.'))" />
-			<ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="$([System.String]::Copy('%(Filename)').StartsWith('Microsoft.Win32.'))" />
-		</ItemGroup>
-	</Target>
 </Project>

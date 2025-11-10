@@ -3,6 +3,8 @@
 
 Plugin provider for loading runtime plugins from the file system with an inspection (sandbox) AppDomain to reduce primary AppDomain pollution and mitigate DLL Hell.
 
+For modern .NET (Core, 5+) consider using the [AssemblyLoadContext Plugin Provider](https://github.com/DKorablin/Plugin.FileContextPluginProvider)
+
 ## Features
 * Scans one or many folders for plugin assemblies.
 * Uses a secondary AppDomain to reflect and detect valid plugin types (implements `IPlugin`). Only needed assemblies are then loaded into the primary AppDomain.
@@ -14,9 +16,9 @@ Plugin provider for loading runtime plugins from the file system with an inspect
 1. Resolve plugin search paths: read `SAL_Path` command line argument (semicolon separated). If absent, use the current process directory.
 2. For every existing path, enumerate files (recursive) that match allowed extensions.
 3. For each candidate file, queue an `AssemblyTypesReader` in the sandbox AppDomain (via `AssemblyAnalyzer`) to:
-   - Load the assembly (LoadFrom).
-   - Enumerate types and filter with `PluginUtils.IsPluginType` (implements required interfaces / constraints).
-   - Capture errors (BadImageFormat, ReflectionTypeLoad issues) into `AssemblyTypesInfo`.
+	- Load the assembly (LoadFrom).
+	- Enumerate types and filter with `PluginUtils.IsPluginType` (implements required interfaces / constraints).
+	- Capture errors (BadImageFormat, ReflectionTypeLoad issues) into `AssemblyTypesInfo`.
 4. Return the collected `AssemblyTypesInfo[]` to the primary AppDomain via a `MarshalByRefObject` proxy.
 5. In the primary domain, for each successful result load the assembly (LoadFile) and register every discovered plugin type with `Host.Plugins.LoadPlugin`.
 6. Set up `FileSystemWatcher` per folder to monitor future changes; on change, repeat the check for that single file.
@@ -43,8 +45,8 @@ Extensions: controlled by `FilePluginArgs.LibraryExtensions` (default includes `
 Minimal pattern:
 ```
 public sealed class MySamplePlugin : IPlugin {
-    public bool OnConnection(ConnectMode mode) { /* init */ return true; }
-    public bool OnDisconnection(DisconnectMode mode) { return true; }
+	public bool OnConnection(ConnectMode mode) { /* init */ return true; }
+	public bool OnDisconnection(DisconnectMode mode) { return true; }
 }
 ```
 
