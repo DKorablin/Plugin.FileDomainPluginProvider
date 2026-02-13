@@ -5,4 +5,3 @@ using System.Runtime.InteropServices;
 [assembly: System.CLSCompliant(true)]
 
 [assembly: AssemblyDescription("Plugin loader assembly with sandbox check in new domain")]
-[assembly: AssemblyCopyright("Copyright © Danila Korablin 2016-2025")]
