@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using AlphaOmega.Reflection;
 using Plugin.FileDomainPluginProvider.Domain;
@@ -104,25 +105,24 @@ namespace Plugin.FileDomainPluginProvider
 			AssemblyName targetName = new AssemblyName(assemblyName);
 			foreach(String pluginPath in this.Args.PluginPath)
 				if(Directory.Exists(pluginPath))
-					foreach(String file in Directory.GetFiles(pluginPath, "*.*", SearchOption.AllDirectories))
-						if(FilePluginArgs.CheckFileExtension(file))//Searching only files with .dll extension (UPD: Added opportunity to check various extensions for plugins)
-							try
-							{
-								AssemblyName name = AssemblyName.GetAssemblyName(file);
-								if(name.FullName == targetName.FullName)
-									return Assembly.LoadFile(file);
-								//return assembly;//TODO: Reference DLL from operating system can't be use!
-							} catch(BadImageFormatException)
-							{
-								// Ignoring BadImageFormatException
-							} catch(FileLoadException)
-							{
-								// Ignoring FileLoadException
-							} catch(Exception exc)
-							{
-								exc.Data.Add("Library", file);
-								this.Trace.TraceData(TraceEventType.Error, 1, exc);
-							}
+					foreach(String file in Directory.EnumerateFiles(pluginPath, "*.*", SearchOption.AllDirectories).Where(FilePluginArgs.CheckFileExtension))//Searching only files with .dll extension (UPD: Added opportunity to check various extensions for plugins)
+						try
+						{
+							AssemblyName name = AssemblyName.GetAssemblyName(file);
+							if(name.FullName == targetName.FullName)
+								return Assembly.LoadFile(file);
+							//return assembly;//TODO: Reference DLL from operating system can't be use!
+						} catch(BadImageFormatException)
+						{
+							// Ignoring BadImageFormatException
+						} catch(FileLoadException)
+						{
+							// Ignoring FileLoadException
+						} catch(Exception exc)
+						{
+							exc.Data.Add("Library", file);
+							this.Trace.TraceData(TraceEventType.Error, 1, exc);
+						}
 
 			this.Trace.TraceEvent(TraceEventType.Warning, 5, "The provider {2} is unable to locate the assembly {0} in the path {1}", assemblyName, String.Join(",", this.Args.PluginPath), this.GetType());
 			IPluginProvider parentProvider = ((IPluginProvider)this).ParentProvider;

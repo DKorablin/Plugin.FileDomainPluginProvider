@@ -17,7 +17,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 			List<AssemblyTypesInfo> assemblies = new List<AssemblyTypesInfo>();
 			try
 			{
-				String[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Where(FilePluginArgs.CheckFileExtension).ToArray();
+				String[] files = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories).Where(FilePluginArgs.CheckFileExtension).ToArray();
 				if(files.Length == 0)
 					return assemblies.ToArray();
 

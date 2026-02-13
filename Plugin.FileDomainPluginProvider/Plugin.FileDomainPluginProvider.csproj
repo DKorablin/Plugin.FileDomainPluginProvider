@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net35</TargetFrameworks>
+		<TargetFrameworks>net48</TargetFrameworks>
 		<OutputType>Library</OutputType>
 		<RootNamespace>Plugin.FileDomainPluginProvider</RootNamespace>
 		<Configuration>Release</Configuration>
@@ -27,7 +27,7 @@
 		<None Include="..\README.md" Pack="true" PackagePath="\docs" />
 	</ItemGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)'=='net35'">
+	<PropertyGroup Condition="'$(TargetFramework)'=='net48'">
 		<UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>
 
