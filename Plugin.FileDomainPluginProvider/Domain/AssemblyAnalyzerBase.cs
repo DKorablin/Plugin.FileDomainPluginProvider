@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using Plugin.FilePluginProvider;
 
@@ -35,18 +37,15 @@ namespace Plugin.FileDomainPluginProvider.Domain
 		private static Assembly OnReflectionOnlyResolve(ResolveEventArgs args, DirectoryInfo directory)
 		{
 
-			Assembly loadedAssembly = Array.Find(AppDomain.CurrentDomain.ReflectionOnlyGetAssemblies(), delegate(Assembly asm) { return String.Equals(asm.FullName, args.Name, StringComparison.OrdinalIgnoreCase); });
+			Assembly loadedAssembly = Array.Find(AppDomain.CurrentDomain.ReflectionOnlyGetAssemblies(), (asm) => String.Equals(asm.FullName, args.Name, StringComparison.OrdinalIgnoreCase));
 
 			if(loadedAssembly != null)
 				return loadedAssembly;
 
-			AssemblyName assemblyName = new AssemblyName(args.Name);
-			foreach(String extension in FilePluginArgs.LibraryExtensions)
-			{
-				String dependentAssemblyFilename = Path.Combine(directory.FullName, assemblyName.Name + extension);
-				if(File.Exists(dependentAssemblyFilename))
-					return Assembly.ReflectionOnlyLoadFrom(dependentAssemblyFilename);
-			}
+			String assemblyPath = SearchForAssembly(args, directory);
+			if(assemblyPath != null)
+				return Assembly.ReflectionOnlyLoadFrom(assemblyPath);
+
 			return Assembly.ReflectionOnlyLoad(args.Name);
 		}
 
@@ -57,15 +56,28 @@ namespace Plugin.FileDomainPluginProvider.Domain
 			if(loadedAssembly != null)
 				return loadedAssembly;
 
+			String assemblyPath = SearchForAssembly(args, directory);
+			if(assemblyPath != null)
+				return Assembly.LoadFrom(assemblyPath);
+
+			return null;//return Assembly.Load(args.Name); - StackOverflowException
+		}
+
+		private static String SearchForAssembly(ResolveEventArgs args, DirectoryInfo directory)
+		{
 			AssemblyName assemblyName = new AssemblyName(args.Name);
 			foreach(String extension in FilePluginArgs.LibraryExtensions)
 			{
-				String dependentAssemblyFilename = Path.Combine(directory.FullName, assemblyName.Name + extension);
-
-				if(File.Exists(dependentAssemblyFilename))
-					return Assembly.LoadFrom(dependentAssemblyFilename);
+				String dependentAssemblyFilePath = Path.Combine(directory.FullName, assemblyName.Name + extension);
+				if(File.Exists(dependentAssemblyFilePath))
+					return dependentAssemblyFilePath;
 			}
-			return null;//return Assembly.Load(args.Name); - StackOverflowException
+
+			//It's possible that dependent assembly is located in subfolder of plugin directory. Need to check it as well.
+			foreach(String foundAssemblyPath in Directory.EnumerateFiles(directory.FullName, assemblyName.Name + ".*", SearchOption.AllDirectories).Where(FilePluginArgs.CheckFileExtension))
+				return foundAssemblyPath;
+
+			return null;
 		}
 	}
 }

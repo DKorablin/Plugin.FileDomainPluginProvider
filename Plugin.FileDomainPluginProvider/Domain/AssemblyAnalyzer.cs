@@ -17,12 +17,12 @@ namespace Plugin.FileDomainPluginProvider.Domain
 			List<AssemblyTypesInfo> assemblies = new List<AssemblyTypesInfo>();
 			try
 			{
-				String[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Where(FilePluginArgs.CheckFileExtension).ToArray();
+				String[] files = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories).Where(FilePluginArgs.CheckFileExtension).ToArray();
 				if(files.Length == 0)
 					return assemblies.ToArray();
 
 				// Process in batches to avoid ThreadPool starvation
-				Int32 batchSize = Math.Max(1, files.Length / Environment.ProcessorCount);
+				Int32 batchSize = 99999;//Math.Max(1, files.Length / Environment.ProcessorCount);
 				List<ManualResetEvent> onDone = new List<ManualResetEvent>();
 				List<AssemblyTypesReader> readers = new List<AssemblyTypesReader>();
 
