@@ -22,7 +22,7 @@ namespace Plugin.FileDomainPluginProvider.Domain
 					return assemblies.ToArray();
 
 				// Process in batches to avoid ThreadPool starvation
-				Int32 batchSize = 99999;//Math.Max(1, files.Length / Environment.ProcessorCount);
+				Int32 batchSize = Math.Max(1, files.Length / Environment.ProcessorCount);
 				List<ManualResetEvent> onDone = new List<ManualResetEvent>();
 				List<AssemblyTypesReader> readers = new List<AssemblyTypesReader>();
 
